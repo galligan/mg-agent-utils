@@ -34,6 +34,16 @@
         }
       },
       "previousNames": []
+    },
+    "agent-version-control.mdc": {
+      "usage": {
+        "cursor": {
+          "usageCount": 1,
+          "firstUsed": "2025-04-04T17:31:23+00:00",
+          "lastUsed": "2025-04-04T17:31:23+00:00"
+        }
+      },
+      "previousNames": []
     }
   }
 }
