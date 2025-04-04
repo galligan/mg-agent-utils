@@ -1,0 +1,8 @@
+---
+description: Use this rule when making changes to project documentation
+globs: 
+alwaysApply: false
+---
+# Project Documentation Changes
+
+1. ✅ Use emoji where tasteful and appropriate

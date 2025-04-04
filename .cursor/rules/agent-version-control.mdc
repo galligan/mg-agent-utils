@@ -1,0 +1,379 @@
+---
+description: Use when you need to commit changes to a git repository
+globs: 
+alwaysApply: false
+---
+# Agent Version Control Process
+
+## Critical rules
+
+1. ALWAYS work within branches (see branching strategy below)
+2. NEVER commit to `main` unless specifically directed to
+3. ALWAYS commit your changes as often as possible or makes sense given the task
+4. ALWAYS ensure proper conventional commit titles and formatting based on the recommendations below
+5. PREFER smaller, focused commits over large ones
+6. TRY to resolve git conflicts autonomously
+   - If you cannot resolve a conflict, ask for direction
+   - You should never perform a `force` action or `rebase` without clarifying with the user first
+
+## Commit Size Best Practices
+
+- Aim for small, focused commits that do one thing well
+- Break larger changes into multiple smaller commits when possible
+  - Each commit should represent a logical, self-contained unit of work
+  - Multiple small commits are easier to review than one large commit
+- If a change feels too large, it probably is
+- Consider whether changes can be broken down into:
+  - Infrastructure/setup changes
+  - Core functionality changes
+  - Test additions
+  - Documentation updates
+- Benefits of smaller commits:
+  - Easier to understand and review
+  - Simpler to revert if problems arise
+  - Better for bisecting when hunting bugs
+  - More granular history for future reference
+
+## When to commit your changes
+
+- If the user explicitly defines a commit frequency, you should follow their directive
+- When working on bigger tasks, break them into smaller, logical commits
+  - Don't wait until the entire task is complete
+  - Commit each logical part as you complete it
+- Otherwise commit after:
+  - Completing a distinct logical chunk of work
+  - Completing a feature or sub-feature
+  - Completing a bug fix
+  - Refactoring a specific component or function
+  - Adding tests for a specific functionality
+- Upon user request for a commit
+  - Unless the user specifies, ask for clarification about what type of commit is needed, with reasonable suggestions
+
+## Branching strategy
+
+- Most of the time you should use prefix-based naming for branches e.g. `prefix/`:
+  - Prefixes: `feat`, `fix`, `docs`, `build`, `chore`, `ci`, `style`, `refactor`, `perf`, `test`
+- For version-specfic work, you should mention the version and prefix e.g. `[version]/[prefix]`
+  - `v1.2.3/feat/add-storybook-support`
+- For sub-branches, you should use the existing branch name, followed by a `/` and then a short description e.g. `feat/{{ feat_name }}/short-description`
+
+## Checkpoint / Handoff commits
+
+These are special commits that are performed in the middle of a task or session.
+
+- Handoffs: Use the @@handoff rules
+- Checkpoints: Use the @@checkpoint rules
+
+## Commit Sequence (CRITICAL)
+
+1. Group changes logically:
+   - Identify files that belong together functionally (e.g., a feature and its tests)
+   - Separate unrelated changes into different commits
+   - Break large changes into multiple smaller commits with clear purposes
+   - Each commit should be a cohesive, self-contained unit that doesn't break functionality
+   - AVOID using `git add .` as it can include unrelated changes
+2. From the root of the workspace run the `git add` command:
+   - Use `git add <specific-files>` to include only related changes
+   - For example: `git add src/components/Button.js src/styles/button.css src/tests/Button.test.js`
+3. Review all added changes that will be included in the commit
+   - Use `git diff --staged` to verify only related changes are included
+   - Ensure the commit size is manageable and focused on a single logical change
+4. Format your commits according to the format rules below
+5. Push all to the remote current branch
+
+## Commit Formatting (CRITICAL)
+
+### 1. Quick Reference
+
+#### 1.1 Single-Line Commits (Preferred)
+
+```bash
+# Safe single-line commit and push
+git add . && git commit -m "type(scope): description" && git push
+
+# Example:
+git add . && git commit -m "feat(auth): add OAuth2 integration" && git push
+```
+
+#### 1.2 Multi-Line Commits (For Complex Changes)
+
+```bash
+# Safe multi-line commit using temporary file
+echo "type(scope): brief description
+
+- Detail 1
+- Detail 2" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG && git push
+```
+
+##### 1.2.1 Detailed multi-line commit format
+
+```txt
+    type(scope): brief description
+    
+    Changes:
+    - Detail 1
+    - Detail 2
+    - …
+    
+    Issues: (optional)
+    - Issue 1
+    - Issue 2
+    - …
+
+    Lessons: (optional)
+    - Lesson 1
+    - Lesson 2  
+    - …
+
+    Documentation: (optional)
+    - Documentation 1
+    - Documentation 2
+    - …
+```
+
+### 2. Commit Message Format
+
+#### 2.1 Structure
+
+```txt
+type(scope): brief description
+```
+
+#### 2.2 Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `style`: Formatting
+- `refactor`: Code restructuring
+- `test`: Test changes
+- `chore`: Maintenance
+- `perf`: Performance improvement
+- `build`: Build system changes
+- `ci`: CI configuration
+- `revert`: Reverts a previous commit
+- `hotfix`: Hotfix for a production issue
+- `release`: Release notes
+- `checkpoint`: Agent checkpoint (see @@checkpoint-sequence)
+- `handoff`: Agent handoff (see @@handoff-sequence)
+
+#### 2.3 Scopes
+
+- `api`: API changes
+- `ui`: UI changes
+- `db`: Database
+- `auth`: Authentication
+- `rules`: Cursor rules
+- `docs`: Documentation
+- `test`: Testing
+- `core`: Core functionality
+- `config`: Configuration files
+- `deps`: Dependency updates
+- `security`: Security-related changes
+- `i18n`: Internationalization/localization
+- `a11y`: Accessibility improvements
+- `infra`: Infrastructure changes
+- `analytics`: Analytics and monitoring
+- `ux`: User experience improvements
+- `models`: Data models or ML models
+- `utils`: Utility functions
+- `middleware`: Middleware components
+- `storage`: Storage or caching mechanisms
+
+### 3. Error Prevention
+
+#### 3.1 ✅ CORRECT Patterns
+
+```bash
+# Single quotes
+git commit -m 'feat(auth): add login flow'
+
+# Double quotes
+git commit -m "fix(api): resolve timeout issue"
+
+# File-based for multi-line
+echo "feat(ui): add responsive layout
+
+- Add mobile breakpoints
+- Implement flex containers
+- Update media queries" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG
+```
+
+#### 3.2 ❌ INCORRECT Patterns
+
+```bash
+# DON'T use newlines in -m flag
+git commit -m "feat(ui): add layout
+- Add breakpoints
+- Update styles"
+
+# DON'T use multiple -m flags
+git commit -m "feat(ui): add layout" -m "- Add breakpoints"
+```
+
+### 4. Best Practices
+
+#### 4.1 Message Guidelines
+
+1. Use imperative mood ("add" not "adds")
+2. Keep first line under 50 characters
+3. No period at the end of the first line
+4. Be specific and clear
+5. Reference relevant issues or PRs
+
+#### 4.2 Commit Organization
+
+1. Make atomic commits (one logical change)
+2. Verify changes before committing
+3. Run tests before pushing
+4. Review the diff before committing
+5. Keep commits focused and small
+
+### 5. Common Patterns
+
+#### 5.1 Feature Work
+
+```bash
+git commit -m "feat(user): add email verification"
+git commit -m "feat(auth): implement 2FA support"
+```
+
+#### 5.2 Bug Fixes
+
+```bash
+git commit -m "fix(api): resolve rate limiting issue"
+git commit -m "fix(ui): correct button alignment"
+```
+
+#### 5.3 Documentation
+
+```bash
+git commit -m "docs(api): update endpoint documentation"
+git commit -m "docs(setup): add deployment guide"
+```
+
+#### 5.4 Refactoring
+
+```bash
+git commit -m "refactor(core): optimize data processing"
+git commit -m "refactor(auth): simplify login flow"
+```
+
+### 6. Recovery Procedures
+
+#### 6.1 Fix Last Commit
+
+```bash
+# Amend commit message
+git commit --amend -m "type(scope): corrected message"
+
+# Amend commit content
+git add forgotten-file
+git commit --amend --no-edit
+```
+
+#### 6.2 Split Failed Commit
+
+```bash
+# Reset last commit
+git reset HEAD~1
+
+# Commit changes separately
+git add feature-files
+git commit -m "feat(scope): first part"
+git add test-files
+git commit -m "test(scope): add tests"
+```
+
+### 7. Automation
+
+#### 7.1 Git Aliases
+
+```bash
+# Add to ~/.gitconfig
+[alias]
+  # Commit with message
+  cm = "!f() { git commit -m \"$1\"; }; f"
+
+  # Add, commit, and push
+  acp = "!f() { git add . && git commit -m \"$1\" && git push; }; f"
+
+  # Safe multi-line commit
+  mcm = "!f() { echo \"$1\" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG; }; f"
+```
+
+#### 7.2 Shell Functions
+
+```bash
+# Add to ~/.zshrc or ~/.bashrc
+
+# Safe single-line commit
+commit() {
+  git add . && git commit -m "$1" && git push
+}
+
+# Safe multi-line commit
+commit() {
+  echo "$1" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG && git push
+}
+```
+
+### 8. Pre-commit Checklist
+
+1. Code Quality
+   - Run linters
+   - Check formatting
+   - Remove debug code
+   - Run tests
+2. Security
+   - No sensitive data
+   - No API keys
+   - No credentials
+   - Check file permissions
+3. Commit Message
+   - Correct type and scope
+   - Clear description
+   - No newlines in -m flag
+   - Reference issues if applicable
+4. Changes
+   - Review diff
+   - Verify file inclusions
+   - Check for unintended changes
+   - Confirm test coverage
+
+### 9. Mandatory Diff Review
+
+#### 9.1 Pre-Commit Diff Check
+
+Before any commit, ALWAYS run:
+
+```bash
+# Check status first
+git status | cat
+
+# Then review changes in detail
+git diff | cat
+
+# For staged changes
+git diff --staged | cat
+```
+
+#### 9.2 Diff Review Checklist
+
+1. File Changes
+   - Confirm all intended files are modified
+   - No unintended file deletions
+   - No sensitive files exposed
+2. Code Changes
+   - Review each chunk of changes
+   - Verify line deletions are intentional
+   - Check for debugging code
+   - Confirm formatting changes
+3. Large Changes Warning
+   - For large deletions, double-check necessity
+   - Request confirmation for significant file removals
+4. Post-Review Actions
+   - Address any unintended changes
+   - Remove debug statements
+   - Fix formatting issues
+   - Split into multiple commits if needed

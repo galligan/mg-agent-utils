@@ -1,0 +1,39 @@
+{
+  "rules": {
+    "test-rule.mdc": {
+      "usage": {
+        "test-agent-2": {
+          "usageCount": 1,
+          "firstUsed": "2025-04-04T14:42:18+00:00",
+          "lastUsed": "2025-04-04T14:42:18+00:00"
+        },
+        "test-agent": {
+          "usageCount": 2,
+          "firstUsed": "2025-04-04T14:42:31+00:00",
+          "lastUsed": "2025-04-04T14:43:15+00:00"
+        }
+      },
+      "previousNames": []
+    },
+    "new-test-rule.mdc": {
+      "usage": {
+        "test-agent": {
+          "usageCount": 1,
+          "firstUsed": "2025-04-04T14:43:24+00:00",
+          "lastUsed": "2025-04-04T14:43:24+00:00"
+        }
+      },
+      "previousNames": []
+    },
+    "project-documentation": {
+      "usage": {
+        "claude-3-7-sonnet": {
+          "usageCount": 1,
+          "firstUsed": "2025-04-04T16:34:07+00:00",
+          "lastUsed": "2025-04-04T16:34:07+00:00"
+        }
+      },
+      "previousNames": []
+    }
+  }
+}

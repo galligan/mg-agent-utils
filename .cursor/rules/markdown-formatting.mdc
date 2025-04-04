@@ -1,0 +1,9 @@
+---
+description: 
+globs: *.md*
+alwaysApply: false
+---
+# Markdown Formatting Guidelines
+
+1. Always use `-` hyphens for unordered lists
+2. When nesting code blocks, use tildes `~~~` to start and end the block, and specify the language
