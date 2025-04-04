@@ -1,55 +1,31 @@
 ---
-description: Use when you need to commit changes to a git repository
+description: Use this rule when making changes to the codebase.
 globs: 
 alwaysApply: false
 ---
-# Agent Version Control Process
+# Agent Version Control
 
-## Critical rules
+You are an agent responsible for ensuring code changes are committed with consistent patterns, and in the appropriate branch.
 
-1. ALWAYS work within branches (see branching strategy below)
-2. NEVER commit to `main` unless specifically directed to
-3. ALWAYS commit your changes as often as possible or makes sense given the task
-4. ALWAYS ensure proper conventional commit titles and formatting based on the recommendations below
-5. PREFER smaller, focused commits over large ones
-6. TRY to resolve git conflicts autonomously
-   - If you cannot resolve a conflict, ask for direction
-   - You should never perform a `force` action or `rebase` without clarifying with the user first
+## Critical Rules
 
-## Commit Size Best Practices
+1. ✅ Always identify logical chunks of changes and create conventional commits one-at-a-time for this codebase.
+   - Prefer smaller, focused commits over larger, more complex ones.
+2. ❌ Never commit directly to `main` or `master`
+   - Before committing, check the current branch with: `git rev-parse --abbrev-ref HEAD`
+   - If on `main` or `master`, do not commit. Suggest a branch name and ask the user if they'd like to create it.
+3. ✅ If on the `dev` branch, create a feature branch for the current task using the [branching conventions](#branching-conventions)
+4. ✅ Follow the [commit workflow](#commit-workflow) to commit changes
+   - Always run through the [pre-commit checklist](#step-3-pre-commit-checklist) before committing
+   - Always write conventional commit messages in the [preferred format](#commit-message-format)
+   - Ask the user for the task description if you don't have a clear idea of what it was
+5. ✅ Verify your changes with `git recap` (see [Recap Alias](#recap-alias))
+6. ✅ After all of your work is complete, push your changes with `git push-recap` (see [Push & Recap Alias](#push-and-recap-alias))
+7. 🚧 If you run into issues, check the [troubleshooting](#troubleshooting) section
+   - If you cannot resolve an issue autonomously, you should ask the user for help
+   - Never perform a `force` action or `rebase` without the user's permission
 
-- Aim for small, focused commits that do one thing well
-- Break larger changes into multiple smaller commits when possible
-  - Each commit should represent a logical, self-contained unit of work
-  - Multiple small commits are easier to review than one large commit
-- If a change feels too large, it probably is
-- Consider whether changes can be broken down into:
-  - Infrastructure/setup changes
-  - Core functionality changes
-  - Test additions
-  - Documentation updates
-- Benefits of smaller commits:
-  - Easier to understand and review
-  - Simpler to revert if problems arise
-  - Better for bisecting when hunting bugs
-  - More granular history for future reference
-
-## When to commit your changes
-
-- If the user explicitly defines a commit frequency, you should follow their directive
-- When working on bigger tasks, break them into smaller, logical commits
-  - Don't wait until the entire task is complete
-  - Commit each logical part as you complete it
-- Otherwise commit after:
-  - Completing a distinct logical chunk of work
-  - Completing a feature or sub-feature
-  - Completing a bug fix
-  - Refactoring a specific component or function
-  - Adding tests for a specific functionality
-- Upon user request for a commit
-  - Unless the user specifies, ask for clarification about what type of commit is needed, with reasonable suggestions
-
-## Branching strategy
+## Branching Conventions
 
 - Most of the time you should use prefix-based naming for branches e.g. `prefix/`:
   - Prefixes: `feat`, `fix`, `docs`, `build`, `chore`, `ci`, `style`, `refactor`, `perf`, `test`
@@ -57,89 +33,32 @@ alwaysApply: false
   - `v1.2.3/feat/add-storybook-support`
 - For sub-branches, you should use the existing branch name, followed by a `/` and then a short description e.g. `feat/{{ feat_name }}/short-description`
 
-## Checkpoint / Handoff commits
+### Commits
 
-These are special commits that are performed in the middle of a task or session.
+- Always create a commit for each logical chunk of changes
+- Use the [commit message format](#commit-message-format) for commit messages
+- Use the [commit message conventions](#commit-message-conventions) for commit messages
+- Use the [commit message types](#commit-message-types) for commit messages
+- Use the [commit message scopes](#commit-message-scopes) for commit messages
+- Follow the [commit workflow](#commit-workflow) to commit and push your changes
 
-- Handoffs: Use the @@handoff rules
-- Checkpoints: Use the @@checkpoint rules
+### Commit Message Format
 
-## Commit Sequence (CRITICAL)
-
-1. Group changes logically:
-   - Identify files that belong together functionally (e.g., a feature and its tests)
-   - Separate unrelated changes into different commits
-   - Break large changes into multiple smaller commits with clear purposes
-   - Each commit should be a cohesive, self-contained unit that doesn't break functionality
-   - AVOID using `git add .` as it can include unrelated changes
-2. From the root of the workspace run the `git add` command:
-   - Use `git add <specific-files>` to include only related changes
-   - For example: `git add src/components/Button.js src/styles/button.css src/tests/Button.test.js`
-3. Review all added changes that will be included in the commit
-   - Use `git diff --staged` to verify only related changes are included
-   - Ensure the commit size is manageable and focused on a single logical change
-4. Format your commits according to the format rules below
-5. Push all to the remote current branch
-
-## Commit Formatting (CRITICAL)
-
-### 1. Quick Reference
-
-#### 1.1 Single-Line Commits (Preferred)
-
-```bash
-# Safe single-line commit and push
-git add . && git commit -m "type(scope): description" && git push
-
-# Example:
-git add . && git commit -m "feat(auth): add OAuth2 integration" && git push
-```
-
-#### 1.2 Multi-Line Commits (For Complex Changes)
-
-```bash
-# Safe multi-line commit using temporary file
-echo "type(scope): brief description
-
-- Detail 1
-- Detail 2" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG && git push
-```
-
-##### 1.2.1 Detailed multi-line commit format
-
-```txt
-    type(scope): brief description
-    
-    Changes:
-    - Detail 1
-    - Detail 2
-    - …
-    
-    Issues: (optional)
-    - Issue 1
-    - Issue 2
-    - …
-
-    Lessons: (optional)
-    - Lesson 1
-    - Lesson 2  
-    - …
-
-    Documentation: (optional)
-    - Documentation 1
-    - Documentation 2
-    - …
-```
-
-### 2. Commit Message Format
-
-#### 2.1 Structure
+Use the following format for commit messages:
 
 ```txt
 type(scope): brief description
 ```
 
-#### 2.2 Types
+### Commit Message Conventions
+
+1. ✅ Use imperative mood in the subject line
+   - e.g. ✅ `Add...` not ❌ `Added...`
+2. ✅ Keep the subject line under 70 characters
+3. ✅ Don't use a `.` period at the end of the subject line
+4. ✅ Be specific and concise
+
+### Commit Message Types
 
 - `feat`: New feature
 - `fix`: Bug fix
@@ -154,10 +73,8 @@ type(scope): brief description
 - `revert`: Reverts a previous commit
 - `hotfix`: Hotfix for a production issue
 - `release`: Release notes
-- `checkpoint`: Agent checkpoint (see @@checkpoint-sequence)
-- `handoff`: Agent handoff (see @@handoff-sequence)
 
-#### 2.3 Scopes
+### Commit Message Scopes
 
 - `api`: API changes
 - `ui`: UI changes
@@ -180,200 +97,192 @@ type(scope): brief description
 - `middleware`: Middleware components
 - `storage`: Storage or caching mechanisms
 
-### 3. Error Prevention
+## Commit Workflow
 
-#### 3.1 ✅ CORRECT Patterns
+Follow the following workflow when committing changes and pushing to the remote repository:
+
+### Step 1: Review Changes
+
+- Check the repository's pre-commit information with: `git pci`
+  - If `pci` is not available, add it to `.gitconfig` with the [pre-commit alias](#pre-commit-alias-pci)
+
+### Step 2: Analyze and Plan
+
+1. Create a plan of your commits. Think about the sequence that would make most sense.
+2. For each potential commit, you should identify:
+   - The individual files that should be included in the commit
+   - The commit [type](#commit-message-types) and [scope](#commit-message-scopes)
+   - A clear and concise description of the changes
+3. Explain this plan to the user, but you should not require confirmation unless there are destructive changes.
+4. Proceed with the next steps:
+   - [Complete the Pre-Commit Checklist](#step-3-pre-commit-checklist)
+   - [Commit and Stage the Files](#step-4-write-a-properly-formatted-commit-message-and-stage-the-files)
+   - [Push Changes](#step-5-push-changes-recap-and-verify)
+
+### Step 3: Pre-Commit Checklist
+
+1. Ensure code quality
+   - Run linters
+   - Check formatting
+   - Remove extraneous debug code
+   - Run appropriate tests
+2. Preserve security
+   - Check for any hardcoded secrets or API keys
+   - Check for any sensitive information in the changes
+   - Check file permissions
+
+### Step 4: Write a properly-formatted commit message and stage the files
+
+1. Always use the commit message [conventions](#commit-message-conventions)
+   - Using the correct [type](#commit-message-types) and [scope](#commit-message-scopes)
+   - Write the commit message:
+     - For single-line commit messages: `git cm <commit-message>` (see [Commit With Message Alias](#commit-with-message-alias-cm))
+     - For multi-line commit messages: `git mcm <commit-message>` (see [Multi-line Commit Alias](#multi-line-commit-alias-mcm))
+2. Review the changes
+   - Check the repository's pre-commit information with: `git pci`
+   - Verify the file inclusions
+3. Stage ONLY the files relevant to the specific commit with the `adds` alias (see [Add & Stage Alias](#add-and-stage-alias-adds)). This will also show the repository status and staged changes after staging the files.
+
+   ```bash
+   git adds <file-1> <file-2> <file-3> ...
+   ```
+
+#### Commit Examples
+
+**✅ CORRECT PATTERNS:**
 
 ```bash
 # Single quotes
-git commit -m 'feat(auth): add login flow'
+git cm 'feat(auth): add login flow'
 
 # Double quotes
-git commit -m "fix(api): resolve timeout issue"
+git cm "fix(api): resolve timeout issue"
 
 # File-based for multi-line
-echo "feat(ui): add responsive layout
+git mcm "feat(ui): add responsive layout
 
 - Add mobile breakpoints
 - Implement flex containers
-- Update media queries" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG
+- Update media queries"
 ```
 
-#### 3.2 ❌ INCORRECT Patterns
+**❌ INCORRECT PATTERNS:**
 
 ```bash
-# DON'T use newlines in -m flag
-git commit -m "feat(ui): add layout
+# DON'T use newlines when the -m flag is used (in this case, with the cm alias)
+git cm "feat(ui): add layout
 - Add breakpoints
 - Update styles"
 
 # DON'T use multiple -m flags
-git commit -m "feat(ui): add layout" -m "- Add breakpoints"
+git cm "feat(ui): add layout" -m "- Add breakpoints"
 ```
 
-### 4. Best Practices
+### Step 5: Push Changes, Recap, and Verify
 
-#### 4.1 Message Guidelines
+1. Review your initial plan and ensure you've followed it precisely such that you've
+   - Created a commit for each logical chunk of changes
+   - Used the [commit message format](#commit-message-format)
+   - Completed the [pre-commit checklist](#step-3-pre-commit-checklist)
+   - Properly [committed and staged the files](#step-4-write-a-properly-formatted-commit-message-and-stage-the-files)
+2. Only after you've verified the plan should you proceed with the next steps
+3. Push your changes with `git push-recap` (see [Push & Recap Alias](#push-and-recap-alias))
+   - This will push your changes to the remote repository and show a recap of what happened
+   - If you run into issues, you should ask the user for help
+4. Provide the user with a succinct summary of your actions
 
-1. Use imperative mood ("add" not "adds")
-2. Keep first line under 50 characters
-3. No period at the end of the first line
-4. Be specific and clear
-5. Reference relevant issues or PRs
+## Troubleshooting
 
-#### 4.2 Commit Organization
+If you run into issues, consider the following:
 
-1. Make atomic commits (one logical change)
-2. Verify changes before committing
-3. Run tests before pushing
-4. Review the diff before committing
-5. Keep commits focused and small
-
-### 5. Common Patterns
-
-#### 5.1 Feature Work
-
-```bash
-git commit -m "feat(user): add email verification"
-git commit -m "feat(auth): implement 2FA support"
-```
-
-#### 5.2 Bug Fixes
-
-```bash
-git commit -m "fix(api): resolve rate limiting issue"
-git commit -m "fix(ui): correct button alignment"
-```
-
-#### 5.3 Documentation
-
-```bash
-git commit -m "docs(api): update endpoint documentation"
-git commit -m "docs(setup): add deployment guide"
-```
-
-#### 5.4 Refactoring
-
-```bash
-git commit -m "refactor(core): optimize data processing"
-git commit -m "refactor(auth): simplify login flow"
-```
-
-### 6. Recovery Procedures
-
-#### 6.1 Fix Last Commit
+### Fix Last Commit
 
 ```bash
 # Amend commit message
 git commit --amend -m "type(scope): corrected message"
 
 # Amend commit content
-git add forgotten-file
+git add <forgotten-file>
 git commit --amend --no-edit
 ```
 
-#### 6.2 Split Failed Commit
+### Split Failed Commit
+
+In this scenario, we use a [split-commit](#split-commit-alias-split-commit) to simplify the process of splitting a failed commit into two separate commits:
 
 ```bash
-# Reset last commit
-git reset HEAD~1
-
-# Commit changes separately
-git add feature-files
-git commit -m "feat(scope): first part"
-git add test-files
-git commit -m "test(scope): add tests"
+git split-commit "<file-a1> <file-a2> <file-an> " "<message-a>" "<pattern-b>" "<message-b>"
 ```
 
-### 7. Automation
-
-#### 7.1 Git Aliases
+Here's an example of this in action:
 
 ```bash
-# Add to ~/.gitconfig
-[alias]
-  # Commit with message
-  cm = "!f() { git commit -m \"$1\"; }; f"
+# Reset last commit and re-commit the files as two separate commits
+git split-commit "src/components/Button.js" "feat: add button component" "src/styles/*.css" "style: update stylesheets"
 
-  # Add, commit, and push
-  acp = "!f() { git add . && git commit -m \"$1\" && git push; }; f"
+# Output:
+# === RESETTING LAST COMMIT ===
+# === COMMITTING: src/components/Button.js with message: feat: add button component ===
+# === COMMITTING: src/styles/*.css with message: style: update stylesheets ===
+# === SPLIT COMPLETE ===
+# === REPOSITORY STATUS AFTER COMMIT ===
+# M  src/components/Button.js
+# M  src/styles/button.css
+# M  src/styles/layout.css
 
-  # Safe multi-line commit
-  mcm = "!f() { echo \"$1\" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG; }; f"
+# ... (additional output)
 ```
 
-#### 7.2 Shell Functions
+## Git Aliases Commands
+
+### Pre-Commit Alias (`pci`)
 
 ```bash
-# Add to ~/.zshrc or ~/.bashrc
-
-# Safe single-line commit
-commit() {
-  git add . && git commit -m "$1" && git push
-}
-
-# Safe multi-line commit
-commit() {
-  echo "$1" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG && git push
-}
+git config --local alias.pci '!f() { echo "=== REPOSITORY STATUS ==="; git status --short | cat; echo "\n=== STAGED CHANGES ==="; git diff --staged --color | cat; echo "\n=== UNSTAGED CHANGES ==="; git diff --color | cat; echo "\n=== UNTRACKED FILES ==="; git ls-files --others --exclude-standard | cat; echo "\n=== RECENT COMMITS ==="; git log -n 3 --oneline | cat; }; f'
 ```
 
-### 8. Pre-commit Checklist
-
-1. Code Quality
-   - Run linters
-   - Check formatting
-   - Remove debug code
-   - Run tests
-2. Security
-   - No sensitive data
-   - No API keys
-   - No credentials
-   - Check file permissions
-3. Commit Message
-   - Correct type and scope
-   - Clear description
-   - No newlines in -m flag
-   - Reference issues if applicable
-4. Changes
-   - Review diff
-   - Verify file inclusions
-   - Check for unintended changes
-   - Confirm test coverage
-
-### 9. Mandatory Diff Review
-
-#### 9.1 Pre-Commit Diff Check
-
-Before any commit, ALWAYS run:
+### Add & Stage Alias (`adds`)
 
 ```bash
-# Check status first
-git status | cat
-
-# Then review changes in detail
-git diff | cat
-
-# For staged changes
-git diff --staged | cat
+git config --local alias.adds '!f() { git add "$@"; echo "=== REPOSITORY STATUS AFTER ADD ==="; git status --short | cat; echo "\n=== STAGED CHANGES ==="; git diff --staged --color | cat; }; f'
 ```
 
-#### 9.2 Diff Review Checklist
+### Commit With Message Alias (`cm`)
 
-1. File Changes
-   - Confirm all intended files are modified
-   - No unintended file deletions
-   - No sensitive files exposed
-2. Code Changes
-   - Review each chunk of changes
-   - Verify line deletions are intentional
-   - Check for debugging code
-   - Confirm formatting changes
-3. Large Changes Warning
-   - For large deletions, double-check necessity
-   - Request confirmation for significant file removals
-4. Post-Review Actions
-   - Address any unintended changes
-   - Remove debug statements
-   - Fix formatting issues
-   - Split into multiple commits if needed
+```bash
+git config --local alias.cm '!f() { git commit -m \"$1\"; }; f'
+```
+
+### Multi-line Commit Alias (`mcm`)
+
+```bash
+git config --local alias.mcm '!f() { echo "$1" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG; }; f'
+```
+
+### Recap Alias (`recap`)
+
+```bash
+# Add the recap alias to show repository status and recent commits after a commit
+git config --local alias.recap '!f() { echo "=== REPOSITORY STATUS AFTER COMMIT ==="; git status --short | cat; echo "\n=== LAST 3 COMMITS ==="; git log -n 3 --oneline --stat | cat; }; f'
+```
+
+### Push & Recap Alias (`push-recap`)
+
+```bash
+git config --local alias.push-recap '!f() { BRANCH=$(git symbolic-ref --short HEAD); UPSTREAM=$(git config branch.$BRANCH.remote); if [ -z "$UPSTREAM" ]; then echo "=== NEW BRANCH: SETTING UP TRACKING ==="; git push -u origin $BRANCH; else echo "=== PUSHING CHANGES ==="; git push "$@"; fi; PUSH_STATUS=$?; echo "\n=== PUSH SUMMARY ==="; if [ $PUSH_STATUS -eq 0 ]; then echo "✓ Push successful"; echo "\n=== CURRENT BRANCH STATUS ==="; git status --short | cat; echo "\n=== RECENT COMMITS ==="; git log -n 3 --oneline --stat | cat; else echo "✗ Push failed with status code " $PUSH_STATUS; echo "\n=== CURRENT STATUS ==="; git status | cat; fi; }; f'
+```
+
+### Split Commit Alias (`split-commit`)
+
+```bash
+git config --local alias.split-commit '!f() { if [ $# -lt 4 ]; then echo "Usage: git split-commit \"<file-a1> <file-a2> ...\" \"<message-a>\" \"<pattern-b>\" \"<message-b>\" [\"<files-c>\" \"<message-c>\" ...]"; echo "Examples:"; echo "  Specific files + Pattern: git split-commit \"file-a1.js file-a2.js file-a3.js\" \"feat: update specific files\" \"pattern-b/*.css\" \"style: update stylesheets\""; echo "  Single file + Pattern: git split-commit \"src/components/Button.js\" \"feat: update button component\" \"src/utils/*.js\" \"refactor: improve utilities\""; return 1; fi; echo "=== RESETTING LAST COMMIT ==="; git reset HEAD~1; while [ $# -ge 2 ]; do files=$1; message=$2; echo "\n=== COMMITTING: $files with message: $message ==="; git add $files; git commit -m "$message"; shift 2; done; echo "\n=== SPLIT COMPLETE ==="; git status --short | cat; }; f'
+```
+
+## Remember
+
+- ✅ Never commingle unrelated changes
+- ✅ Always verify excluded files aren't staged
+- ✅ Never commit directly to `main`
+- ✅ Always prompt for a task description if not known
+- ✅ Create branches from `dev` when appropriate
+- ✅ Format commit messages with the [conventional commit message format](#commit-message-format)
