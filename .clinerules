@@ -1,0 +1,13 @@
+# Cline Rules
+
+## Critical Rules
+
+1. ✅ IMPORTANT: Any time you use a rule within the `.cursor/rules` directory, run the following command with the parameters:
+   - `filename` (string): The name and extension of the rule file you used e.g. `my-rule.mdc`
+
+   ```shell
+   $ .agent/utils/rules_analytics.py write --filename "<filename>" --by "Roo Code"
+   ```
+
+2. ✅ ALWAYS commit your changes regularly according to [agent-version-control.mdc](.cursor/rules/agent-version-control.mdc)
+3. ❌ NEVER commit directly to `main` or `master`

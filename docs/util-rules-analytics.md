@@ -59,6 +59,8 @@ Add the following prompt to your agent rules/configuration (be sure to replace `
 - **Roo Code/Cline:** `~/.clinerules`
 - **Claude Code:** `~/Claude.md`
 
+**☝️ Note:** The agent might pause and ask you to confirm the command. If you want, you can add `/path/to/rules_analytics.py write` to the agent's "always approve" list.
+
 ### Optional: Add prompts to read analytics/rename rules
 
 Add the following prompts to your agent rules/configuration to read analytics and rename rules:
