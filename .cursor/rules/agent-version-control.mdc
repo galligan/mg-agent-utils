@@ -9,24 +9,24 @@ You are an agent responsible for ensuring code changes are committed with consis
 
 ## Critical Rules
 
-1. ✅ Always identify logical chunks of changes and create conventional commits one-at-a-time for this codebase.
+1. ✅ Always check if the current branch is synchronized with main using the [Branch Check](#step-1-review-changes) e.g. `git sd-branch`
+   - ❌ Never commit directly to `main` or `master`
+2. ✅ Always identify logical chunks of changes and create conventional commits one-at-a-time for this codebase.
    - Prefer smaller, focused commits over larger, more complex ones.
-2. ❌ Never commit directly to `main` or `master`
-   - Before committing, check the current branch with: `git rev-parse --abbrev-ref HEAD`
-   - If on `main` or `master`, do not commit. Suggest a branch name and ask the user if they'd like to create it.
 3. ✅ If on the `dev` branch, create a feature branch for the current task using the [branching conventions](#branching-conventions)
 4. ✅ Follow the [commit workflow](#commit-workflow) to commit changes
    - Always run through the [pre-commit checklist](#step-3-pre-commit-checklist) before committing
    - Always write conventional commit messages in the [preferred format](#commit-message-format)
    - Ask the user for the task description if you don't have a clear idea of what it was
-5. ✅ Verify your changes with `git recap` (see [Recap Alias](#recap-alias))
-6. ✅ After all of your work is complete, push your changes with `git push-recap` (see [Push & Recap Alias](#push-and-recap-alias))
+5. ✅ Verify your changes with `git sd-status`
+6. ✅ After all of your work is complete, push your changes with `git sd-push`
 7. 🚧 If you run into issues, check the [troubleshooting](#troubleshooting) section
    - If you cannot resolve an issue autonomously, you should ask the user for help
    - Never perform a `force` action or `rebase` without the user's permission
 
 ## Branching Conventions
 
+- Create new branches with `git sd-branch <branch-name>`
 - Most of the time you should use prefix-based naming for branches e.g. `prefix/`:
   - Prefixes: `feat`, `fix`, `docs`, `build`, `chore`, `ci`, `style`, `refactor`, `perf`, `test`
 - For version-specfic work, you should mention the version and prefix e.g. `[version]/[prefix]`
@@ -47,7 +47,7 @@ You are an agent responsible for ensuring code changes are committed with consis
 Use the following format for commit messages:
 
 ```txt
-type(scope): brief description
+git cm "type(scope): brief description as subject line"
 ```
 
 ### Commit Message Conventions
@@ -57,6 +57,8 @@ type(scope): brief description
 2. ✅ Keep the subject line under 70 characters
 3. ✅ Don't use a `.` period at the end of the subject line
 4. ✅ Be specific and concise
+5. ✨ Optional: Use a multi-line commit message by including a description file
+   - e.g. `git cm "type(scope): subject line" <commit-description-file>`
 
 ### Commit Message Types
 
@@ -97,14 +99,29 @@ type(scope): brief description
 - `middleware`: Middleware components
 - `storage`: Storage or caching mechanisms
 
+### Examples Commit Messages
+
+```bash
+# ✅ Good examples:
+git cm "feat(auth): add login flow"
+git cm "fix(api): resolve timeout issue"
+git cm "docs: update installation instructions"
+
+# ❌ Bad examples:
+git cm "changes to the auth module" # No type or scope
+git cm "fixed the timeout issue which was causing the application to crash after 30 seconds of inactivity" # Too long
+```
+
 ## Commit Workflow
 
 Follow the following workflow when committing changes and pushing to the remote repository:
 
 ### Step 1: Review Changes
 
-- Check the repository's pre-commit information with: `git pci`
-  - If `pci` is not available, add it to `.gitconfig` with the [pre-commit alias](#pre-commit-alias-pci)
+1. Use `git sd-branch` to check the current branch's relationship to main and dev
+   - If you're on a `dev` or `main` branch, you can use `git sd-branch <branch-name>` to create a new feature branch
+   - Follow the guidance provided in the output if you're seeing issues
+1. Check the repository's status with "super duper status": `git sd-status`
 
 ### Step 2: Analyze and Plan
 
@@ -136,12 +153,12 @@ Follow the following workflow when committing changes and pushing to the remote 
 1. Always use the commit message [conventions](#commit-message-conventions)
    - Using the correct [type](#commit-message-types) and [scope](#commit-message-scopes)
    - Write the commit message:
-     - For single-line commit messages: `git cm <commit-message>` (see [Commit With Message Alias](#commit-with-message-alias-cm))
-     - For multi-line commit messages: `git mcm <commit-message>` (see [Multi-line Commit Alias](#multi-line-commit-alias-mcm))
+     - For single-line commit messages: `git cm "<commit-message>"`
+     - For multi-line commit messages: `git cm "<commit-message>" <commit-description-file>`
 2. Review the changes
    - Check the repository's pre-commit information with: `git pci`
    - Verify the file inclusions
-3. Stage ONLY the files relevant to the specific commit with the `adds` alias (see [Add & Stage Alias](#add-and-stage-alias-adds)). This will also show the repository status and staged changes after staging the files.
+3. Stage ONLY the files relevant to the specific commit with the `git adds` alias. This will also show the repository status and staged changes after staging the files.
 
    ```bash
    git adds <file-1> <file-2> <file-3> ...
@@ -159,17 +176,19 @@ git cm 'feat(auth): add login flow'
 git cm "fix(api): resolve timeout issue"
 
 # File-based for multi-line
-git mcm "feat(ui): add responsive layout
+git cm "feat(ui): add responsive layout" <commit-description-file>
 
+# COMMIT_DESC.tmp (for multi-line)
 - Add mobile breakpoints
 - Implement flex containers
 - Update media queries"
+# / COMMIT_DESC.tmp
 ```
 
 **❌ INCORRECT PATTERNS:**
 
 ```bash
-# DON'T use newlines when the -m flag is used (in this case, with the cm alias)
+# DON'T use newlines without creating a temp file first
 git cm "feat(ui): add layout
 - Add breakpoints
 - Update styles"
@@ -186,8 +205,9 @@ git cm "feat(ui): add layout" -m "- Add breakpoints"
    - Completed the [pre-commit checklist](#step-3-pre-commit-checklist)
    - Properly [committed and staged the files](#step-4-write-a-properly-formatted-commit-message-and-stage-the-files)
 2. Only after you've verified the plan should you proceed with the next steps
-3. Push your changes with `git push-recap` (see [Push & Recap Alias](#push-and-recap-alias))
+3. Push your changes with `git sd-push`
    - This will push your changes to the remote repository and show a recap of what happened
+   - If necessary, you can do a `git sd-push --force` to force push your changes to the remote repository
    - If you run into issues, you should ask the user for help
 4. Provide the user with a succinct summary of your actions
 
@@ -208,7 +228,7 @@ git commit --amend --no-edit
 
 ### Split Failed Commit
 
-In this scenario, we use a [split-commit](#split-commit-alias-split-commit) to simplify the process of splitting a failed commit into two separate commits:
+In this scenario, we use a `git split-commit` to simplify the process of splitting a failed commit into two separate commits:
 
 ```bash
 git split-commit "<file-a1> <file-a2> <file-an> " "<message-a>" "<pattern-b>" "<message-b>"
@@ -233,53 +253,10 @@ git split-commit "src/components/Button.js" "feat: add button component" "src/st
 # ... (additional output)
 ```
 
-## Git Aliases Commands
-
-### Pre-Commit Alias (`pci`)
-
-```bash
-git config --local alias.pci '!f() { echo "=== REPOSITORY STATUS ==="; git status --short | cat; echo "\n=== STAGED CHANGES ==="; git diff --staged --color | cat; echo "\n=== UNSTAGED CHANGES ==="; git diff --color | cat; echo "\n=== UNTRACKED FILES ==="; git ls-files --others --exclude-standard | cat; echo "\n=== RECENT COMMITS ==="; git log -n 3 --oneline | cat; }; f'
-```
-
-### Add & Stage Alias (`adds`)
-
-```bash
-git config --local alias.adds '!f() { git add "$@"; echo "=== REPOSITORY STATUS AFTER ADD ==="; git status --short | cat; echo "\n=== STAGED CHANGES ==="; git diff --staged --color | cat; }; f'
-```
-
-### Commit With Message Alias (`cm`)
-
-```bash
-git config --local alias.cm '!f() { git commit -m \"$1\"; }; f'
-```
-
-### Multi-line Commit Alias (`mcm`)
-
-```bash
-git config --local alias.mcm '!f() { echo "$1" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG; }; f'
-```
-
-### Recap Alias (`recap`)
-
-```bash
-# Add the recap alias to show repository status and recent commits after a commit
-git config --local alias.recap '!f() { echo "=== REPOSITORY STATUS AFTER COMMIT ==="; git status --short | cat; echo "\n=== LAST 3 COMMITS ==="; git log -n 3 --oneline --stat | cat; }; f'
-```
-
-### Push & Recap Alias (`push-recap`)
-
-```bash
-git config --local alias.push-recap '!f() { BRANCH=$(git symbolic-ref --short HEAD); UPSTREAM=$(git config branch.$BRANCH.remote); if [ -z "$UPSTREAM" ]; then echo "=== NEW BRANCH: SETTING UP TRACKING ==="; git push -u origin $BRANCH; else echo "=== PUSHING CHANGES ==="; git push "$@"; fi; PUSH_STATUS=$?; echo "\n=== PUSH SUMMARY ==="; if [ $PUSH_STATUS -eq 0 ]; then echo "✓ Push successful"; echo "\n=== CURRENT BRANCH STATUS ==="; git status --short | cat; echo "\n=== RECENT COMMITS ==="; git log -n 3 --oneline --stat | cat; else echo "✗ Push failed with status code " $PUSH_STATUS; echo "\n=== CURRENT STATUS ==="; git status | cat; fi; }; f'
-```
-
-### Split Commit Alias (`split-commit`)
-
-```bash
-git config --local alias.split-commit '!f() { if [ $# -lt 4 ]; then echo "Usage: git split-commit \"<file-a1> <file-a2> ...\" \"<message-a>\" \"<pattern-b>\" \"<message-b>\" [\"<files-c>\" \"<message-c>\" ...]"; echo "Examples:"; echo "  Specific files + Pattern: git split-commit \"file-a1.js file-a2.js file-a3.js\" \"feat: update specific files\" \"pattern-b/*.css\" \"style: update stylesheets\""; echo "  Single file + Pattern: git split-commit \"src/components/Button.js\" \"feat: update button component\" \"src/utils/*.js\" \"refactor: improve utilities\""; return 1; fi; echo "=== RESETTING LAST COMMIT ==="; git reset HEAD~1; while [ $# -ge 2 ]; do files=$1; message=$2; echo "\n=== COMMITTING: $files with message: $message ==="; git add $files; git commit -m "$message"; shift 2; done; echo "\n=== SPLIT COMPLETE ==="; git status --short | cat; }; f'
-```
-
 ## Remember
 
+- ✅ Always check branch synchronization with main before making changes
+- ✅ Create a new branch if on main and synchronized with main
 - ✅ Never commingle unrelated changes
 - ✅ Always verify excluded files aren't staged
 - ✅ Never commit directly to `main`
