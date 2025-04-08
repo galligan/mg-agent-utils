@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Cursor Rules
@@ -67,10 +67,10 @@ Flag command for performing this step: `--review`
 
 1. Prepare changes for commit with appropriate conventional commit messages
 2. Check the status of the repository with `git sd-status` and check the branch with `git sd-branch`
-3. Stage files with `git adds <file-1> <file-2> <file-3> ...`
-4. Commit changes using `git cm "type(scope): brief description"` or `git cm <commit-description-file>` for multi-line commits
+3. Stage files with `git sda <file-1> <file-2> <file-3> ...`
+4. Commit changes using `git sdc "type(scope): brief description"` or `git sdc <commit-description-file>` for multi-line commits
 5. Push the changes to the remote repository using `git sd-push`
-6. Verify the push was successful with `git recap` and update the user on the current state
+6. Verify the push was successful with `git sd-status` and update the user on the current state
 
 Flag command for performing this step: `--push`
 
@@ -113,7 +113,7 @@ Flag command for performing this workflow: `--yolo`
 ### Recap
 
 1. Deeply think through the user's request
-2. Examine the current state of the codebase, focusing on changes since the last commit with `git status`
+2. Examine the current state of the codebase, focusing on changes since the last commit with `git sd-status`
 3. Review the last 3 commits with `git log -n 3 --oneline --stat --cat`
 4. Consider the recent changes, and think about how they might be related to the user's request
 5. Try to predict what the appropriate next step is, and make recommendations to the user on what to do next

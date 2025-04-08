@@ -1,6 +1,6 @@
 ---
 description: Use this rule when making changes to the codebase.
-globs: 
+globs:
 alwaysApply: false
 ---
 # Agent Version Control
@@ -47,7 +47,7 @@ You are an agent responsible for ensuring code changes are committed with consis
 Use the following format for commit messages:
 
 ```txt
-git cm "type(scope): brief description as subject line"
+git sdc "type(scope): brief description as subject line"
 ```
 
 ### Commit Message Conventions
@@ -58,7 +58,7 @@ git cm "type(scope): brief description as subject line"
 3. ✅ Don't use a `.` period at the end of the subject line
 4. ✅ Be specific and concise
 5. ✨ Optional: Use a multi-line commit message by including a description file
-   - e.g. `git cm "type(scope): subject line" <commit-description-file>`
+   - e.g. `git sdc "type(scope): subject line" <commit-description-file>`
 
 ### Commit Message Types
 
@@ -103,13 +103,13 @@ git cm "type(scope): brief description as subject line"
 
 ```bash
 # ✅ Good examples:
-git cm "feat(auth): add login flow"
-git cm "fix(api): resolve timeout issue"
-git cm "docs: update installation instructions"
+git sdc "feat(auth): add login flow"
+git sdc "fix(api): resolve timeout issue"
+git sdc "docs: update installation instructions"
 
 # ❌ Bad examples:
-git cm "changes to the auth module" # No type or scope
-git cm "fixed the timeout issue which was causing the application to crash after 30 seconds of inactivity" # Too long
+git sdc "changes to the auth module" # No type or scope
+git sdc "fixed the timeout issue which was causing the application to crash after 30 seconds of inactivity" # Too long
 ```
 
 ## Commit Workflow
@@ -153,10 +153,10 @@ Follow the following workflow when committing changes and pushing to the remote 
 1. Always use the commit message [conventions](#commit-message-conventions)
    - Using the correct [type](#commit-message-types) and [scope](#commit-message-scopes)
    - Write the commit message:
-     - For single-line commit messages: `git cm "<commit-message>"`
-     - For multi-line commit messages: `git cm "<commit-message>" <commit-description-file>`
+     - For single-line commit messages: `git sdc "<commit-message>"`
+     - For multi-line commit messages: `git sdc "<commit-message>" <commit-description-file>`
 2. Review the changes
-   - Check the repository's pre-commit information with: `git pci`
+   - Check the repository's status with: `git sd-status`
    - Verify the file inclusions
 3. Stage ONLY the files relevant to the specific commit with the `git adds` alias. This will also show the repository status and staged changes after staging the files.
 
