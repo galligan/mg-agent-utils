@@ -62,8 +62,8 @@ Flag command for performing this step: `--review`
 
 1. Prepare changes for commit with appropriate conventional commit messages
 2. Check the status of the repository with `git sd-status` and check the branch with `git sd-branch`
-3. Stage files with `git adds <file-1> <file-2> <file-3> ...`
-4. Commit changes using `git cm "type(scope): brief description"` or `git cm <commit-description-file>` for multi-line commits
+3. Stage files with `git sda <file-1> <file-2> <file-3> ...`
+4. Commit changes using `git sdc "type(scope): brief description"` or `git sdc <commit-description-file>` for multi-line commits
 5. Push the changes to the remote repository using `git sd-push`
 6. Verify the push was successful and update the user on the current state
 
@@ -84,7 +84,7 @@ Flag command for performing this step: `--follow-up`
 
 1. Deeply think through the user's request
 2. Plan out the steps you'll take to complete the task
-3. Use the [thoughts template](mdc:.agent/templates/template-thoughts.md) as your guide
+3. Use the [thoughts template](.agent/templates/template-thoughts.md) as your guide
 4. Write details of the user's request to a file `.agent/thoughts/YYYYMMDDHHMM-roo-thoughts-{{ short_description_of_request }}.md`
 5. Proceed with your plan
 6. After completing the task, update your thoughts file with a detailed recap of the task, your interpretation and findings, and recommendations for next steps

@@ -5,5 +5,14 @@ alwaysApply: false
 ---
 # Markdown Formatting Guidelines
 
-1. Always use `-` hyphens for unordered lists
-2. When nesting code blocks, use tildes `~~~` to start and end the block, and specify the language
+1. ✅ Always use `-` hyphens for unordered lists
+2. ✅ Always use `\```\` backticks for code blocks except when nesting them:
+   - When nesting code blocks, use tildes `~~~` to start and end the block, and specify the language e.g.
+
+```markdown
+This is a markdown codeblock
+
+~~~xml
+<this>Is a nested XML codeblock</this>
+~~~
+```
