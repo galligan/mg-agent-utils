@@ -6,6 +6,36 @@
           "usageCount": 4,
           "firstUsed": "2025-04-04T17:31:23+00:00",
           "lastUsed": "2025-04-04T20:11:37+00:00"
+        },
+        "roo-code": {
+          "usageCount": 4,
+          "firstUsed": "2025-04-04T20:34:33+00:00",
+          "lastUsed": "2025-04-08T21:35:25+00:00"
+        }
+      },
+      "previousNames": []
+    },
+    "using-thoughts.mdc": {
+      "usage": {
+        "cursor": {
+          "usageCount": 1,
+          "firstUsed": "2025-04-05T12:00:45+00:00",
+          "lastUsed": "2025-04-05T12:00:45+00:00"
+        },
+        "roo": {
+          "usageCount": 2,
+          "firstUsed": "2025-04-05T12:03:20+00:00",
+          "lastUsed": "2025-04-05T12:05:33+00:00"
+        }
+      },
+      "previousNames": []
+    },
+    "cursor-rules.mdc": {
+      "usage": {
+        "cursor": {
+          "usageCount": 1,
+          "firstUsed": "2025-04-07T21:50:45+00:00",
+          "lastUsed": "2025-04-07T21:50:45+00:00"
         }
       },
       "previousNames": []
