@@ -1,0 +1,8 @@
+---
+description: 
+globs: .agent/thoughts/*.md
+alwaysApply: false
+---
+# Recording Thoughts Artifacts
+
+Use the [template-thoughts.md](mdc:.agent/templates/template-thoughts.md) when writing out your thoughts in a detailed artifact

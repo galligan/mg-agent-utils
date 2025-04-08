@@ -1,0 +1,356 @@
+---
+description: Use this rule when making changes to the codebase.
+globs: 
+alwaysApply: false
+---
+# Agent Version Control
+
+You are an agent responsible for ensuring code changes are committed with consistent patterns, and in the appropriate branch.
+
+## Branch Synchronization Check
+
+Before making any changes, you should check if the current branch is synchronized with the main branch:
+
+1. Check the current branch: `git rev-parse --abbrev-ref HEAD`
+2. Check if the current branch is synchronized with main:
+   ```bash
+   # Get the current branch name
+   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+   
+   # Get the commit hashes for current branch and main
+   CURRENT_COMMIT=$(git rev-parse HEAD)
+   MAIN_COMMIT=$(git rev-parse main)
+   
+   # Compare the commits
+   if [ "$CURRENT_COMMIT" = "$MAIN_COMMIT" ] && [ "$CURRENT_BRANCH" = "main" ]; then
+     echo "⚠️ Current branch is main and is at the same commit as main. You should create a new branch."
+     # Suggest creating a new branch
+     echo "Suggested action: git checkout -b <new-branch-name>"
+   elif [ "$CURRENT_COMMIT" = "$MAIN_COMMIT" ] && [ "$CURRENT_BRANCH" != "main" ]; then
+     echo "ℹ️ Current branch is synchronized with main."
+   else
+     echo "ℹ️ Current branch has diverged from main."
+   fi
+   ```
+3. If the current branch is main and is at the same commit as main, create a new branch:
+   ```bash
+   git checkout -b <new-branch-name>
+   ```
+
+## Critical Rules
+
+1. ✅ Always check if the current branch is synchronized with main using the [Branch Synchronization Check](#branch-synchronization-check)
+   - If on `main` and synchronized, create a new branch before making any changes
+   - Never work directly on the `main` branch, even if it's not synchronized
+2. ✅ Always identify logical chunks of changes and create conventional commits one-at-a-time for this codebase.
+   - Prefer smaller, focused commits over larger, more complex ones.
+3. ❌ Never commit directly to `main` or `master`
+   - Before committing, check the current branch with: `git rev-parse --abbrev-ref HEAD`
+   - If on `main` or `master`, do not commit. Suggest a branch name and ask the user if they'd like to create it.
+4. ✅ If on the `dev` branch, create a feature branch for the current task using the [branching conventions](#branching-conventions)
+5. ✅ Follow the [commit workflow](#commit-workflow) to commit changes
+   - Always run through the [pre-commit checklist](#step-3-pre-commit-checklist) before committing
+   - Always write conventional commit messages in the [preferred format](#commit-message-format)
+   - Ask the user for the task description if you don't have a clear idea of what it was
+6. ✅ Verify your changes with `git recap` (see [Recap Alias](#recap-alias))
+7. ✅ After all of your work is complete, push your changes with `git push-recap` (see [Push & Recap Alias](#push-and-recap-alias))
+8. 🚧 If you run into issues, check the [troubleshooting](#troubleshooting) section
+   - If you cannot resolve an issue autonomously, you should ask the user for help
+   - Never perform a `force` action or `rebase` without the user's permission
+
+## Branching Conventions
+
+- Most of the time you should use prefix-based naming for branches e.g. `prefix/`:
+  - Prefixes: `feat`, `fix`, `docs`, `build`, `chore`, `ci`, `style`, `refactor`, `perf`, `test`
+- For version-specfic work, you should mention the version and prefix e.g. `[version]/[prefix]`
+  - `v1.2.3/feat/add-storybook-support`
+- For sub-branches, you should use the existing branch name, followed by a `/` and then a short description e.g. `feat/{{ feat_name }}/short-description`
+
+### Commits
+
+- Always create a commit for each logical chunk of changes
+- Use the [commit message format](#commit-message-format) for commit messages
+- Use the [commit message conventions](#commit-message-conventions) for commit messages
+- Use the [commit message types](#commit-message-types) for commit messages
+- Use the [commit message scopes](#commit-message-scopes) for commit messages
+- Follow the [commit workflow](#commit-workflow) to commit and push your changes
+
+### Commit Message Format
+
+Use the following format for commit messages:
+
+```txt
+type(scope): brief description
+```
+
+### Commit Message Conventions
+
+1. ✅ Use imperative mood in the subject line
+   - e.g. ✅ `Add...` not ❌ `Added...`
+2. ✅ Keep the subject line under 70 characters
+3. ✅ Don't use a `.` period at the end of the subject line
+4. ✅ Be specific and concise
+
+### Commit Message Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `style`: Formatting
+- `refactor`: Code restructuring
+- `test`: Test changes
+- `chore`: Maintenance
+- `perf`: Performance improvement
+- `build`: Build system changes
+- `ci`: CI configuration
+- `revert`: Reverts a previous commit
+- `hotfix`: Hotfix for a production issue
+- `release`: Release notes
+
+### Commit Message Scopes
+
+- `api`: API changes
+- `ui`: UI changes
+- `db`: Database
+- `auth`: Authentication
+- `rules`: Cursor rules
+- `docs`: Documentation
+- `test`: Testing
+- `core`: Core functionality
+- `config`: Configuration files
+- `deps`: Dependency updates
+- `security`: Security-related changes
+- `i18n`: Internationalization/localization
+- `a11y`: Accessibility improvements
+- `infra`: Infrastructure changes
+- `analytics`: Analytics and monitoring
+- `ux`: User experience improvements
+- `models`: Data models or ML models
+- `utils`: Utility functions
+- `middleware`: Middleware components
+- `storage`: Storage or caching mechanisms
+
+## Commit Workflow
+
+Follow the following workflow when committing changes and pushing to the remote repository:
+
+### Step 1: Review Changes
+
+1. Check if the current branch is synchronized with main:
+   ```bash
+   # Get the current branch name
+   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+   
+   # Get the commit hashes for current branch and main
+   CURRENT_COMMIT=$(git rev-parse HEAD)
+   MAIN_COMMIT=$(git rev-parse main)
+   
+   # Compare the commits
+   if [ "$CURRENT_COMMIT" = "$MAIN_COMMIT" ] && [ "$CURRENT_BRANCH" = "main" ]; then
+     echo "⚠️ Current branch is main and is at the same commit as main. You should create a new branch."
+     # Suggest creating a new branch based on the task
+     echo "Suggested action: git checkout -b <new-branch-name>"
+   elif [ "$CURRENT_COMMIT" = "$MAIN_COMMIT" ] && [ "$CURRENT_BRANCH" != "main" ]; then
+     echo "ℹ️ Current branch is synchronized with main."
+   else
+     echo "ℹ️ Current branch has diverged from main."
+   fi
+   ```
+
+2. If on main and synchronized with main, create a new branch:
+   ```bash
+   # Create a new branch with an appropriate name based on the task
+   git checkout -b <new-branch-name>
+   ```
+
+3. Check the repository's pre-commit information with: `git pci`
+   - If `pci` is not available, add it to `.gitconfig` with the [pre-commit alias](#pre-commit-alias-pci)
+
+### Step 2: Analyze and Plan
+
+1. Create a plan of your commits. Think about the sequence that would make most sense.
+2. For each potential commit, you should identify:
+   - The individual files that should be included in the commit
+   - The commit [type](#commit-message-types) and [scope](#commit-message-scopes)
+   - A clear and concise description of the changes
+3. Explain this plan to the user, but you should not require confirmation unless there are destructive changes.
+4. Proceed with the next steps:
+   - [Complete the Pre-Commit Checklist](#step-3-pre-commit-checklist)
+   - [Commit and Stage the Files](#step-4-write-a-properly-formatted-commit-message-and-stage-the-files)
+   - [Push Changes](#step-5-push-changes-recap-and-verify)
+
+### Step 3: Pre-Commit Checklist
+
+1. Ensure code quality
+   - Run linters
+   - Check formatting
+   - Remove extraneous debug code
+   - Run appropriate tests
+2. Preserve security
+   - Check for any hardcoded secrets or API keys
+   - Check for any sensitive information in the changes
+   - Check file permissions
+
+### Step 4: Write a properly-formatted commit message and stage the files
+
+1. Always use the commit message [conventions](#commit-message-conventions)
+   - Using the correct [type](#commit-message-types) and [scope](#commit-message-scopes)
+   - Write the commit message:
+     - For single-line commit messages: `git cm <commit-message>` (see [Commit With Message Alias](#commit-with-message-alias-cm))
+     - For multi-line commit messages: `git mcm <commit-message>` (see [Multi-line Commit Alias](#multi-line-commit-alias-mcm))
+2. Review the changes
+   - Check the repository's pre-commit information with: `git pci`
+   - Verify the file inclusions
+3. Stage ONLY the files relevant to the specific commit with the `adds` alias (see [Add & Stage Alias](#add-and-stage-alias-adds)). This will also show the repository status and staged changes after staging the files.
+
+   ```bash
+   git adds <file-1> <file-2> <file-3> ...
+   ```
+
+#### Commit Examples
+
+**✅ CORRECT PATTERNS:**
+
+```bash
+# Single quotes
+git cm 'feat(auth): add login flow'
+
+# Double quotes
+git cm "fix(api): resolve timeout issue"
+
+# File-based for multi-line
+git mcm "feat(ui): add responsive layout
+
+- Add mobile breakpoints
+- Implement flex containers
+- Update media queries"
+```
+
+**❌ INCORRECT PATTERNS:**
+
+```bash
+# DON'T use newlines when the -m flag is used (in this case, with the cm alias)
+git cm "feat(ui): add layout
+- Add breakpoints
+- Update styles"
+
+# DON'T use multiple -m flags
+git cm "feat(ui): add layout" -m "- Add breakpoints"
+```
+
+### Step 5: Push Changes, Recap, and Verify
+
+1. Review your initial plan and ensure you've followed it precisely such that you've
+   - Created a commit for each logical chunk of changes
+   - Used the [commit message format](#commit-message-format)
+   - Completed the [pre-commit checklist](#step-3-pre-commit-checklist)
+   - Properly [committed and staged the files](#step-4-write-a-properly-formatted-commit-message-and-stage-the-files)
+2. Only after you've verified the plan should you proceed with the next steps
+3. Push your changes with `git push-recap` (see [Push & Recap Alias](#push-and-recap-alias))
+   - This will push your changes to the remote repository and show a recap of what happened
+   - If you run into issues, you should ask the user for help
+4. Provide the user with a succinct summary of your actions
+
+## Troubleshooting
+
+If you run into issues, consider the following:
+
+### Fix Last Commit
+
+```bash
+# Amend commit message
+git commit --amend -m "type(scope): corrected message"
+
+# Amend commit content
+git add <forgotten-file>
+git commit --amend --no-edit
+```
+
+### Split Failed Commit
+
+In this scenario, we use a [split-commit](#split-commit-alias-split-commit) to simplify the process of splitting a failed commit into two separate commits:
+
+```bash
+git split-commit "<file-a1> <file-a2> <file-an> " "<message-a>" "<pattern-b>" "<message-b>"
+```
+
+Here's an example of this in action:
+
+```bash
+# Reset last commit and re-commit the files as two separate commits
+git split-commit "src/components/Button.js" "feat: add button component" "src/styles/*.css" "style: update stylesheets"
+
+# Output:
+# === RESETTING LAST COMMIT ===
+# === COMMITTING: src/components/Button.js with message: feat: add button component ===
+# === COMMITTING: src/styles/*.css with message: style: update stylesheets ===
+# === SPLIT COMPLETE ===
+# === REPOSITORY STATUS AFTER COMMIT ===
+# M  src/components/Button.js
+# M  src/styles/button.css
+# M  src/styles/layout.css
+
+# ... (additional output)
+```
+
+## Git Aliases Commands
+
+### Branch Sync Check Alias (`branch-sync`)
+
+```bash
+git config --local alias.branch-sync '!f() { CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD); CURRENT_COMMIT=$(git rev-parse HEAD); MAIN_COMMIT=$(git rev-parse main); echo "=== BRANCH SYNCHRONIZATION STATUS ==="; if [ "$CURRENT_COMMIT" = "$MAIN_COMMIT" ] && [ "$CURRENT_BRANCH" = "main" ]; then echo "⚠️ Current branch is main and is at the same commit as main. You should create a new branch."; echo "Suggested action: git checkout -b <new-branch-name>"; elif [ "$CURRENT_COMMIT" = "$MAIN_COMMIT" ] && [ "$CURRENT_BRANCH" != "main" ]; then echo "ℹ️ Current branch is synchronized with main."; else echo "ℹ️ Current branch has diverged from main."; fi; }; f'
+```
+
+### Pre-Commit Alias (`pci`)
+
+```bash
+git config --local alias.pci '!f() { echo "=== REPOSITORY STATUS ==="; git status --short | cat; echo "\n=== STAGED CHANGES ==="; git diff --staged --color | cat; echo "\n=== UNSTAGED CHANGES ==="; git diff --color | cat; echo "\n=== UNTRACKED FILES ==="; git ls-files --others --exclude-standard | cat; echo "\n=== RECENT COMMITS ==="; git log -n 3 --oneline | cat; }; f'
+```
+
+### Add & Stage Alias (`adds`)
+
+```bash
+git config --local alias.adds '!f() { git add "$@"; echo "=== REPOSITORY STATUS AFTER ADD ==="; git status --short | cat; echo "\n=== STAGED CHANGES ==="; git diff --staged --color | cat; }; f'
+```
+
+### Commit With Message Alias (`cm`)
+
+```bash
+git config --local alias.cm '!f() { git commit -m \"$1\"; }; f'
+```
+
+### Multi-line Commit Alias (`mcm`)
+
+```bash
+git config --local alias.mcm '!f() { echo "$1" > .git/COMMIT_EDITMSG && git commit -F .git/COMMIT_EDITMSG; }; f'
+```
+
+### Recap Alias (`recap`)
+
+```bash
+# Add the recap alias to show repository status and recent commits after a commit
+git config --local alias.recap '!f() { echo "=== REPOSITORY STATUS AFTER COMMIT ==="; git status --short | cat; echo "\n=== LAST 3 COMMITS ==="; git log -n 3 --oneline --stat | cat; }; f'
+```
+
+### Push & Recap Alias (`push-recap`)
+
+```bash
+git config --local alias.push-recap '!f() { BRANCH=$(git symbolic-ref --short HEAD); UPSTREAM=$(git config branch.$BRANCH.remote); if [ -z "$UPSTREAM" ]; then echo "=== NEW BRANCH: SETTING UP TRACKING ==="; git push -u origin $BRANCH; else echo "=== PUSHING CHANGES ==="; git push "$@"; fi; PUSH_STATUS=$?; echo "\n=== PUSH SUMMARY ==="; if [ $PUSH_STATUS -eq 0 ]; then echo "✓ Push successful"; echo "\n=== CURRENT BRANCH STATUS ==="; git status --short | cat; echo "\n=== RECENT COMMITS ==="; git log -n 3 --oneline --stat | cat; else echo "✗ Push failed with status code " $PUSH_STATUS; echo "\n=== CURRENT STATUS ==="; git status | cat; fi; }; f'
+```
+
+### Split Commit Alias (`split-commit`)
+
+```bash
+git config --local alias.split-commit '!f() { if [ $# -lt 4 ]; then echo "Usage: git split-commit \"<file-a1> <file-a2> ...\" \"<message-a>\" \"<pattern-b>\" \"<message-b>\" [\"<files-c>\" \"<message-c>\" ...]"; echo "Examples:"; echo "  Specific files + Pattern: git split-commit \"file-a1.js file-a2.js file-a3.js\" \"feat: update specific files\" \"pattern-b/*.css\" \"style: update stylesheets\""; echo "  Single file + Pattern: git split-commit \"src/components/Button.js\" \"feat: update button component\" \"src/utils/*.js\" \"refactor: improve utilities\""; return 1; fi; echo "=== RESETTING LAST COMMIT ==="; git reset HEAD~1; while [ $# -ge 2 ]; do files=$1; message=$2; echo "\n=== COMMITTING: $files with message: $message ==="; git add $files; git commit -m "$message"; shift 2; done; echo "\n=== SPLIT COMPLETE ==="; git status --short | cat; }; f'
+```
+
+## Remember
+
+- ✅ Always check branch synchronization with main before making changes
+- ✅ Create a new branch if on main and synchronized with main
+- ✅ Never commingle unrelated changes
+- ✅ Always verify excluded files aren't staged
+- ✅ Never commit directly to `main`
+- ✅ Always prompt for a task description if not known
+- ✅ Create branches from `dev` when appropriate
+- ✅ Format commit messages with the [conventional commit message format](#commit-message-format)
